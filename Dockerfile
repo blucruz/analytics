@@ -1,14 +1,10 @@
-FROM golang:alpine
-LABEL maintainer="oidisoup@outlook.com"
-# docker中的工作目录
-WORKDIR $GOPATH/src/gin_docker
-# 将当前目录同步到docker工作目录下，也可以只配置需要的目录和文件（配置目录、编译后的程序等）
-ADD . ./
-# 由于所周知的原因，某些包会出现下载超时。这里在docker里也使用go module的代理服务
-ENV GO111MODULE=on
-ENV GOPROXY="https://goproxy.io"
-# 指定编译完成后的文件名，可以不设置使用默认的，最后一步要执行该文件名
-RUN go build -o gin_docker .
-EXPOSE 8080
-# 这里跟编译完的文件名一致
-ENTRYPOINT  ["./gin_docker"]
+FROM registry.cn-shanghai.aliyuncs.com/tcc-public/python:3
+
+## 把当前文件夹里的文件构建到镜像的根目录下
+ADD . /
+
+## 指定默认工作目录为根目录（需要把run.sh和生成的结果文件都放在该文件夹下，提交后才能运行）
+WORKDIR /
+
+## 镜像启动后统一执行 sh run.sh
+CMD ["sh", "run.sh"]
